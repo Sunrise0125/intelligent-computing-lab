@@ -1,0 +1,8 @@
+*.mat
+__pycache__/
+.vscode/
+*.pyc
+*.log
+*.swp
+*.DS_Store
+
