@@ -30,13 +30,10 @@ class MNIST_MLP(object):
         self.max_epoch = max_epoch
         self.print_iter = print_iter
 
-
     def load_mnist(self,file_dir, is_images = 'True'):
         bin_file = open(file_dir, 'rb')
         bin_data = bin_file.read()
         bin_file.close()
-
-
         if is_images:
            fmt_header = '>iiii'
            magic,num_images,num_rows,num_cols=struct.unpack_from(fmt_header,bin_data,0)
@@ -47,7 +44,7 @@ class MNIST_MLP(object):
         data_size = num_images * num_rows * num_cols
         mat_data = struct.unpack_from('>' + str(data_size) + 'B', bin_data, struct.calcsize(fmt_header))
 
-        mat_data = np.reshape(mat_data,[num_images,num_rows*num_cols])
+        mat_data = np.reshape(mat_data,[num_images,num_rows*num_cols])  # N*H*W?
         print('Load images from %s, number: %d, data shape: %s' % (file_dir, num_images, str(mat_data.shape)))
         return mat_data
 
@@ -61,8 +58,6 @@ class MNIST_MLP(object):
 
         self.train_data=np.append(train_images,train_labels, axis=1)  #数据和label拼接，拼成一行，一行784+1个数，也就是785列
         self.test_data=np.append(test_images, test_labels, axis=1)
-
-
 
     def shuffle_data(self):
         print('Randomly shuffle MNIST data...')
@@ -92,7 +87,6 @@ class MNIST_MLP(object):
         self.fc2.load_param(params['w2'],params['b2'])
         self.fc3.load_param(params['w3'],params['b3'])
 
-
     def save_model(self, param_dir):
         print('Saving parameters to file ' + param_dir)
         params = {}
@@ -101,7 +95,6 @@ class MNIST_MLP(object):
         params['w3'], params['b3'] = self.fc3.save_param()
         print( params)
         np.save(param_dir, params)
-
 
     def forward(self, input):  # 神经网络的前向传播
         # TODO：神经网络的前向传播
@@ -112,8 +105,6 @@ class MNIST_MLP(object):
         h3=self.fc3.forward(h2)  #
         prob=self.softmax.forward(h3) #h3:batch_size  * 10
         return prob
-
-
 
     def backward(self):   # 神经网络的反向传播
         # TODO：神经网络的反向传播
@@ -128,9 +119,6 @@ class MNIST_MLP(object):
         for layer in self.update_layer_list:
             layer.update_param(lr)
     
-
-
-
     def train(self):
         max_batch=self.train_data.shape[0] // self.batch_size ###python3
 
@@ -147,9 +135,6 @@ class MNIST_MLP(object):
                 if idx_batch % self.print_iter == 0:
                    print('Epoch %d, iter %d, loss: %.6f' % (idx_epoch, idx_batch, loss))
        
-
-
-
     def evaluate(self):
         pred_results = np.zeros([self.test_data.shape[0]])
         for idx in range(int(self.test_data.shape[0]/self.batch_size)):
